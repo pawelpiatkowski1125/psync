@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sync-pod
+spec:
+  containers:
+  - name: alpine
+    image: alpine:latest  # adjust this
+    command: ["tail", "-f", "/dev/null"]
+    volumeMounts:
+    - name: sync-volume
+      mountPath: /tmp  # and this
+  volumes:
+  - name: sync-volume
+    persistentVolumeClaim:
+      claimName: my-pvc  # and this

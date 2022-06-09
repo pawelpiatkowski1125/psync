@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Optionally use a custom ssh port
+PORT=22
+while getopts "p:t:" opt; do
+    case $opt in
+	p)
+	    PORT="${OPTARG}"
+	    ;;
+	t)
+	    TEMPDIR="${OPTARG}"
+	    ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ "${TEMPDIR}" == "" ]; then
+    TEMPDIR=`mktemp -d`/
+fi
+SOURCE=$1
+POD=$2
+
+if [ "${POD}" == "" ]; then
+    echo Sync directories between a remote machine and a pod.
+    echo USAGE:
+    echo "  psync [-p <port>] [-t <temp_dir>] <source> <destination>"
+    exit 1
+fi
+
+echo $'\033[0;93m'"Copying ${SOURCE} (port ${PORT}) to ${POD}..."
+echo "Temporary directory: ${TEMPDIR} (check out on crash)"$'\033[0m'
+
+rsync -avht -e "ssh -p ${PORT}" "${SOURCE}" "${TEMPDIR}" && 
+    ./krsync -avht "${TEMPDIR}" "${POD}" &&
+    rm -rf ${TEMPDIR}
