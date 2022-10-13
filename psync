@@ -30,6 +30,7 @@ fi
 echo $'\033[0;93m'"Copying ${SOURCE} (port ${PORT}) to ${POD}..."
 echo "Temporary directory: ${TEMPDIR} (check out on crash)"$'\033[0m'
 
+SCRIPT_DIR=`dirname $0`
 rsync -avht -e "ssh -p ${PORT}" "${SOURCE}" "${TEMPDIR}" && 
-    ./krsync -avht "${TEMPDIR}" "${POD}" &&
+    ${SCRIPT_DIR}/krsync -avht "${TEMPDIR}" "${POD}" &&
     rm -rf ${TEMPDIR}
